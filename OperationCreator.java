@@ -3,7 +3,15 @@ public class OperationCreator {
 	
 	private LogicCalculator calculator;
 	
-
+	/**
+	 * Check and create the new operation and add it to the calculator
+	 * 
+	 * @param operationName
+	 * @param operationStructure
+	 * @param calculator
+	 * @throws InvalidStructureException
+	 * 
+	 */
 	public void create(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException{
 		this.calculator = calculator;
 	
@@ -13,7 +21,8 @@ public class OperationCreator {
 			throw new InvalidStructureException();
 		}
 	}
-	/**Check the operation name and the operation structure
+	/**
+	 * Check the operation name and the operation structure
 	 * 
 	 * @param operationName
 	 * @param operationStructure
@@ -23,7 +32,8 @@ public class OperationCreator {
 		return checkName(operationName) && checkStructure(operationStructure);
 	}
 	
-	/**Check that the introduced name is not a repeated name
+	/**
+	 * Check that the introduced name is not a repeated name
 	 * 
 	 * @param operationName
 	 * @return true if the name is a valid name or false if it is invalid
@@ -37,7 +47,8 @@ public class OperationCreator {
 		
 	}
 
-	/**Check the operation structure that the user has introduced
+	/**
+	 * Check the operation structure that the user has introduced
 	 * 
 	 * @param operationStructure
 	 * @return true if the structure is valid and false if it is invalid
@@ -75,7 +86,8 @@ public class OperationCreator {
 		return operatorAExist && operatorBExist && validOperation;
 	}
 	
-	/**This method create a new operation with the name and structure that the user has introduced.
+	/**
+	 * This method create a new operation with the name and structure that the user has introduced.
 	 * 
 	 * @param operationName
 	 * @param operationStructure

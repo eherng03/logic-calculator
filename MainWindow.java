@@ -30,7 +30,7 @@ public class MainWindow {
 	
 
 	/**
-	 * Launch the application.
+	 * Launch the application
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -48,14 +48,14 @@ public class MainWindow {
 	}
 
 	/**
-	 * Create the application.
+	 * Create the application
 	 */
 	public MainWindow() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Initialize the frame content
 	 */
 	private void initialize() {
 		
@@ -82,12 +82,23 @@ public class MainWindow {
 //---------------------------------------------------------------------------------------------------
 //					Initializations
 //---------------------------------------------------------------------------------------------------
+	/**
+	 * Create and initialize a label
+	 * @param string
+	 * @param i
+	 * @param j
+	 * @param k
+	 * @param l
+	 */
 	private void initializeLabel(String string, int i, int j, int k, int l) {
 		JLabel lbl = new JLabel(string);
 		lbl.setBounds(126, 23, k, l);
 		frame.getContentPane().add(lbl);
 	}
 
+	/**
+	 * Create and initialize all the program ComboBoxes
+	 */
 	private void initializeComboBoxes() {
 		
 		cBOperatorA = new JComboBox();
@@ -121,6 +132,9 @@ public class MainWindow {
 		frame.getContentPane().add(cBNotB);
 	}
 
+	/**
+	 * Create and initialize all the program Frame
+	 */
 	private void initializeFrame() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 541, 300);
@@ -128,6 +142,9 @@ public class MainWindow {
 		frame.getContentPane().setLayout(null);
 	}
 	
+	/**
+	 * Create and initialize all the program Buttons
+	 */
 	private void initializeButtons() {
 		btnOperate = new JButton("Operate");
 		btnOperate.addActionListener(new ActionListener() {
@@ -153,7 +170,9 @@ public class MainWindow {
 		frame.getContentPane().add(btnCreate);
 	}
 	
-	
+	/**
+	 * Create and initialize all the program TextFields
+	 */
 	private void initializeTextFields() {
 		tFResult = new JTextField();
 		tFResult.setBounds(416, 41, 86, 20);
