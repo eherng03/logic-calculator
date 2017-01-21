@@ -4,11 +4,13 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class MainWindow {
 
 	private JFrame frame;
-	private JTextField textField;
+	private JTextField result;
 	private JComboBox cBOperatorA;
 	private JComboBox cBOperatorB;
 	private JComboBox cBOperation;
@@ -56,10 +58,20 @@ public class MainWindow {
 		initializeLabel("Result", 266, 22, 61, 14);
 		initializeLabel("If the operation does not exist you can create it", 41, 86, 239, 29);
 		
-		textField = new JTextField();
-		textField.setBounds(416, 41, 86, 20);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		result = new JTextField();
+		result.setBounds(416, 41, 86, 20);
+		frame.getContentPane().add(result);
+		result.setColumns(10);
+		
+		JButton btnOperate = new JButton("Operate");
+		btnOperate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int resultValue = calculator.operate(cBNotA.getSelectedItem(), cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBNotB.getSelectedItem(), cBOperatorB.getSelectedItem());
+				result.setText(Integer.toString(resultValue));
+			}
+		});
+		btnOperate.setBounds(416, 72, 89, 23);
+		frame.getContentPane().add(btnOperate);
 		
 	}
 	
@@ -76,14 +88,14 @@ public class MainWindow {
 		
 		cBOperatorA = new JComboBox();
 		cBOperatorA.setBounds(106, 41, 35, 20);
-		cBOperatorA.addItem("0");
-		cBOperatorA.addItem("1");
+		cBOperatorA.addItem(0);
+		cBOperatorA.addItem(1);
 		frame.getContentPane().add(cBOperatorA);
 		
 		cBOperatorB = new JComboBox();
 		cBOperatorB.setBounds(371, 41, 35, 20);
-		cBOperatorB.addItem("0");
-		cBOperatorB.addItem("1");
+		cBOperatorB.addItem(0);
+		cBOperatorB.addItem(1);
 		frame.getContentPane().add(cBOperatorB);
 		
 		cBOperation = new JComboBox();
@@ -111,7 +123,4 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 	}
-//---------------------------------------------------------------------------------------------------
-//					End initializations
-//---------------------------------------------------------------------------------------------------
 }
