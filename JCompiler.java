@@ -11,6 +11,12 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+/**
+* Compiler class, it compiles during runtime all the .java files
+*
+* @author Alba, Eva and Hector
+*
+*/
 public class JCompiler {
 	
     public static void compilar() throws IOException {

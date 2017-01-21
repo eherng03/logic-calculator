@@ -1,3 +1,4 @@
+import java.io.File;
 
 public class OperationCreator {
 	
@@ -9,16 +10,28 @@ public class OperationCreator {
 	 * @param operationName
 	 * @param operationStructure
 	 * @param calculator
+	 * @throws InvalidNameException 
 	 * @throws InvalidStructureException
 	 * 
 	 */
-	public void create(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException{
+	public void create(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException, InvalidNameException{
 		this.calculator = calculator;
 	
 		if(checkOperation(operationName, operationStructure)){
-			createOperation(operationName, operationStructure);
-		}else{
-			throw new InvalidStructureException();
+			String[] operationStructureParts = operationStructure.split(" ");
+			StringBuilder function = new StringBuilder();
+			function.append("public class " + operationName + "Operation extends Operation{ public )"
+					+ operationName + "Operation(){ name = \"" + operationName + "\";} public static int operate(int a, int b){");
+			for(int i = 0; i < operationStructureParts.length; i++){
+				if(operationStructureParts[i] == "NOT"){
+					//mirar todo lo de los partentesis
+					//todas las operaciones a añadir etc etc
+					//TODO
+				}
+			}
+		
+			function.append("} }");
+			File newClassFile = new File("./" + operationName + "Operation.java");
 		}
 	}
 	/**
@@ -27,8 +40,18 @@ public class OperationCreator {
 	 * @param operationName
 	 * @param operationStructure
 	 * @return true if the operation is valid and false if it is invalid
+	 * @throws InvalidStructureException 
+	 * @throws InvalidNameException 
 	 */
-	private boolean checkOperation(String operationName, String operationStructure) {
+	private boolean checkOperation(String operationName, String operationStructure) throws InvalidStructureException, InvalidNameException {
+		boolean validName = checkName(operationName);
+		boolean validStructure = checkStructure(operationStructure);
+		if(checkName(operationName)){
+			throw new InvalidStructureException();
+		}
+		if(checkStructure(operationStructure)){
+			throw new InvalidNameException();
+		}
 		return checkName(operationName) && checkStructure(operationStructure);
 	}
 	
@@ -74,6 +97,9 @@ public class OperationCreator {
 					return false;
 				}
 				operatorBExist = true;
+			//Check if an operator follows the not operation
+			}else if(NOT.equals(operationStructureParts[i]) && (!B.equals(operationStructureParts[i + 1]) || !A.equals(operationStructureParts[i + 1]))){
+				return false;
 			//Check if the operation exists
 			}else if(calculator.getOperations().contains(operationStructureParts[i])){
 				validOperation = true;
@@ -86,15 +112,4 @@ public class OperationCreator {
 		return operatorAExist && operatorBExist && validOperation;
 	}
 	
-	/**
-	 * This method create a new operation with the name and structure that the user has introduced.
-	 * 
-	 * @param operationName
-	 * @param operationStructure
-	 */
-	private void createOperation(String operationName, String operationStructure) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

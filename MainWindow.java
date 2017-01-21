@@ -7,6 +7,11 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ *Class that throws the main window of the application
+ *
+ *@author Alba, Eva and Hector
+ */
 public class MainWindow {
 
 	private JFrame frame;
@@ -116,7 +121,9 @@ public class MainWindow {
 		cBOperation = new JComboBox();
 		cBOperation.setBounds(151, 41, 130, 20);
 		cBOperation.addItem(" ");
-		cBOperation.addItem("OR");
+		for(int i = 0; i < calculator.getOperations().size(); i++){
+			cBOperation.addItem(calculator.getOperations().get(i));
+		}
 		frame.getContentPane().add(cBOperation);
 		
 		cBNotA = new JComboBox();
@@ -163,6 +170,8 @@ public class MainWindow {
 					creator.create(tFNewOperationName.getText(), tFNewOperationEstructure.getText(), calculator);
 				} catch (InvalidStructureException invalidEstructureError) {
 					 javax.swing.JOptionPane.showMessageDialog(null, invalidEstructureError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+				} catch (InvalidNameException invalidNameError) {
+					javax.swing.JOptionPane.showMessageDialog(null, invalidNameError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

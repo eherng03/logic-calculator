@@ -8,8 +8,16 @@ public class LogicCalculator {
 	
 	LogicCalculator(){
 		operations = new ArrayList<String>();
-		operations.add("NOT");
-		operations.add("OR");
+		operations.add(NOTOperation.getName());
+		operations.add(OROperation.getName());
+	}
+	
+    /**
+     * Returns the arraylist of the available operations implemented.
+     * @return operations
+     */
+	public ArrayList<String> getOperations(){
+		return operations;
 	}
 	
 	/**
@@ -26,67 +34,26 @@ public class LogicCalculator {
 		// cast parameters
 		int a = (int) aValue;
 		int b = (int) bValue;
+		if(notAValue.equals("NOT")){
+			a = NOTOperation.operate(a, 0);
+		}
+		if(notBValue.equals("NOT")){
+			b = NOTOperation.operate(b, 0);
+		}
 		String notA = (String) notAValue;
 		String notB = (String) notBValue;
-		String operation = (String) operationValue;
-		a = notOperator(notA, a);
-		b = notOperator(notB, b);
-		
+		String operationName = (String) operationValue;
+		Operation operation;
 		//Choose operation and operate
-		switch(operation){
+		switch(operationName){
+			case " ":
+				javax.swing.JOptionPane.showMessageDialog(null, "Choose an operation", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
 			case "OR":
-				return orOperator(a, b);
+				return OROperation.operate(a, b);
+				
+			//TODO add operations
 		}
 		
 		return -1;
 	}
-	
-	/**
-	 * @return The existing operations
-	 */
-	public ArrayList<String> getOperations(){
-		return operations;
-	}
-	
-	/**
-	 * Get the result of the NOT logic operation
-	 * @param operator
-	 * @param a
-	 * @return result
-	 */
-	private int notOperator(String operator, int a){
-		if(operator.equals("NOT")){
-			if(a == 0){
-				return 1;
-			}else{
-				return 0;
-			}
-		}else{
-			return a;
-		}
-	}
-	
-	/**
-	 * Get the result of the OR logic operation
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	private int orOperator(int a, int b){
-		boolean result = toBoolean(a) || toBoolean(b);
-		if(result){
-			return 1;
-		}else{
-			return 0;
-		}
-	}
-	/**
-	 * Get a true value if the parameter is one and a false value if it is 0
-	 * @param x
-	 * @return result
-	 */
-	private boolean toBoolean(int x){
-		return x == 1;
-	}
-
 }
