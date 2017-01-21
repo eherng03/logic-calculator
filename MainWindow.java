@@ -10,14 +10,23 @@ import java.awt.event.ActionEvent;
 public class MainWindow {
 
 	private JFrame frame;
-	private JTextField result;
+	
+	private JTextField tFResult;
+	private JTextField tFNewOperationName;
+	private JTextField tFNewOperationEstructure;
+	
 	private JComboBox cBOperatorA;
 	private JComboBox cBOperatorB;
 	private JComboBox cBOperation;
 	private JComboBox cBNotA;
 	private JComboBox cBNotB;
+	
+	private JButton btnOperate;
+	private JButton btnCreate;
+	
 	private LogicCalculator calculator;
 	
+	private OperationCreator creator;
 	
 
 	/**
@@ -49,32 +58,27 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		calculator = new LogicCalculator();
+		
+		creator = new OperationCreator();
+		
 		initializeFrame();
 		initializeComboBoxes();
+		initializeButtons();
+		initializeTextFields();
 		initializeLabel("A", 41, 22, 46, 14);
 		initializeLabel("B", 210, 22, 46, 14);
 		initializeLabel("Operation", 86, 22, 114, 14);
 		initializeLabel("Result", 266, 22, 61, 14);
 		initializeLabel("If the operation does not exist you can create it", 41, 86, 239, 29);
-		
-		result = new JTextField();
-		result.setBounds(416, 41, 86, 20);
-		frame.getContentPane().add(result);
-		result.setColumns(10);
-		
-		JButton btnOperate = new JButton("Operate");
-		btnOperate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int resultValue = calculator.operate(cBNotA.getSelectedItem(), cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBNotB.getSelectedItem(), cBOperatorB.getSelectedItem());
-				result.setText(Integer.toString(resultValue));
-			}
-		});
-		btnOperate.setBounds(416, 72, 89, 23);
-		frame.getContentPane().add(btnOperate);
-		
+
 	}
 	
+
+
+
+
 //---------------------------------------------------------------------------------------------------
 //					Initializations
 //---------------------------------------------------------------------------------------------------
@@ -122,5 +126,48 @@ public class MainWindow {
 		frame.setBounds(100, 100, 541, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+	}
+	
+	private void initializeButtons() {
+		btnOperate = new JButton("Operate");
+		btnOperate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int resultValue = calculator.operate(cBNotA.getSelectedItem(), cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBNotB.getSelectedItem(), cBOperatorB.getSelectedItem());
+				tFResult.setText(Integer.toString(resultValue));
+			}
+		});
+		btnOperate.setBounds(416, 72, 89, 23);
+		frame.getContentPane().add(btnOperate);
+		
+		btnCreate = new JButton("Create");
+		btnCreate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					creator.introduceData(tFNewOperationName.getText(), tFNewOperationEstructure.getText(), calculator);
+				} catch (InvalidStructureException invalidEstructureError) {
+					 javax.swing.JOptionPane.showMessageDialog(null, invalidEstructureError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		btnCreate.setBounds(413, 194, 89, 23);
+		frame.getContentPane().add(btnCreate);
+	}
+	
+	
+	private void initializeTextFields() {
+		tFResult = new JTextField();
+		tFResult.setBounds(416, 41, 86, 20);
+		frame.getContentPane().add(tFResult);
+		tFResult.setColumns(10);
+		
+		tFNewOperationName = new JTextField();
+		tFNewOperationName.setColumns(10);
+		tFNewOperationName.setBounds(26, 163, 115, 20);
+		frame.getContentPane().add(tFNewOperationName);
+		
+		tFNewOperationEstructure = new JTextField();
+		tFNewOperationEstructure.setColumns(10);
+		tFNewOperationEstructure.setBounds(151, 163, 341, 20);
+		frame.getContentPane().add(tFNewOperationEstructure);
 	}
 }

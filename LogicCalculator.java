@@ -1,6 +1,16 @@
+import java.util.ArrayList;
+
 import javax.swing.JComboBox;
 
 public class LogicCalculator {
+	
+	private ArrayList<String> operations;
+	
+	LogicCalculator(){
+		operations = new ArrayList<String>();
+		operations.add("NOT");
+		operations.add("OR");
+	}
 	
 	public int operate(Object notAValue, Object aValue, Object operationValue, Object notBValue, Object bValue) {
 		// cast parameters
@@ -19,6 +29,10 @@ public class LogicCalculator {
 		}
 		
 		return -1;
+	}
+	
+	public ArrayList<String> getOperations(){
+		return operations;
 	}
 	
 	private int notOperator(String operator, int a){
