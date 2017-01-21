@@ -143,7 +143,7 @@ public class MainWindow {
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					creator.introduceData(tFNewOperationName.getText(), tFNewOperationEstructure.getText(), calculator);
+					creator.create(tFNewOperationName.getText(), tFNewOperationEstructure.getText(), calculator);
 				} catch (InvalidStructureException invalidEstructureError) {
 					 javax.swing.JOptionPane.showMessageDialog(null, invalidEstructureError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
 				}
