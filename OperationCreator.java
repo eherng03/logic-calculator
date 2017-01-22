@@ -1,5 +1,7 @@
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 
 public class OperationCreator {
 	private LogicCalculator calculator;
@@ -14,12 +16,12 @@ public class OperationCreator {
 	 * @throws InvalidStructureException
 	 * 
 	 */
-	public void create(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException, InvalidNameException{
+	public void createOperation(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException, InvalidNameException{
 		this.calculator = calculator;
 		
 		if(checkOperation(operationName, operationStructure)){
 			String[] operationStructureParts = operationStructure.split(" ");
-			
+			ArrayList<String> lista = toPostfixExpression(operationStructureParts);
 			
 			File newClassFile = new File("./" + operationName + "Operation.java");
 		}
@@ -116,18 +118,60 @@ public class OperationCreator {
 				}
 			//Check if the operation exists
 			}else{
-				for(int j = 0; j < calculator.getOperations().size(); j++){
-					if(calculator.getOperations().get(j).getName().equals(operationStructureParts[i])){
-						validOperation = true;
-						break;
-					}
-				}
-				if(!validOperation){
-					return false;
-				}
+				return calculator.containOperation(operationStructureParts[i]);
 			}
 		}
 		return operatorAExist && operatorBExist && validOperation && checkParentheses.isEmpty();
 	}
 
+	
+	
+	private void createClass(){
+		
+	}
+	
+	private ArrayList<String> toPostfixExpression(String[] operationInfixStructureParts){
+		// We used this algorithm    --->    http://faculty.cs.niu.edu/~hutchins/csci241/eval.htm
+		Deque<String> stack = new ArrayDeque<>();
+		ArrayList<String> postfixExpression = new ArrayList<>();
+		for(int i = 0; i < operationInfixStructureParts.length; i++){
+			if(operationInfixStructureParts[i].equals("A") || operationInfixStructureParts[i].equals("B")){
+				postfixExpression.add(operationInfixStructureParts[i]);
+			}else if(operationInfixStructureParts[i].equals("(")){
+				stack.add(operationInfixStructureParts[i]);
+			}else if(operationInfixStructureParts[i].equals(")")){
+				while(!stack.isEmpty() && (!stack.peek().equals("("))){
+					postfixExpression.add(stack.pop());
+				}
+				if(!stack.isEmpty()){
+					stack.pop();
+				}else{
+					//Error
+				}
+			}else if(calculator.containOperation(operationInfixStructureParts[i])){
+				if(stack.isEmpty() || stack.peek().equals("(")){
+					stack.push(operationInfixStructureParts[i]);
+				}else{
+					while(!stack.isEmpty() && !stack.peek().equals("(")){
+						postfixExpression.add(stack.pop());
+					}
+					stack.push(operationInfixStructureParts[i]);
+				}
+			}else if(operationInfixStructureParts[i].equals("NOT")){
+				//TODO
+			}
+		}
+		//pa sacar lo que queda en la pila
+		while(!stack.isEmpty()){
+			String expresion = stack.pop();
+			if(expresion.equals("(") || expresion.equals(")")){
+				//Error
+			}
+			postfixExpression.add(expresion);
+		}
+		return postfixExpression;
+		
+	}
+	
+	
 }

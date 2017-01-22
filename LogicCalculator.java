@@ -15,6 +15,19 @@ public class LogicCalculator {
 	public ArrayList<Operation> getOperations() {
 		return operations;
 	}
+	
+	/**
+     * Returns true if the string is an existing operation in the arraylist
+     * @return true
+     */
+	public boolean containOperation(String operation){
+		for(int j = 0; j < operations.size(); j++){
+			if(operations.get(j).getName().equals(operation)){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Get the result of the operation
