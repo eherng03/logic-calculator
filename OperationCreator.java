@@ -3,6 +3,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
+import com.squareup.javapoet.*;
 /**
  * Create new Class user operations.
  * 
@@ -11,6 +12,11 @@ import java.util.Deque;
  */
 public class OperationCreator {
 	private LogicCalculator calculator;
+	private final String A = "A";
+	private final String B = "B";
+	private final String NOT = "NOT";
+	private final String OPENPARENTHESIS = "(";
+	private final String CLOSEPARENTHESIS = ")";
 	
 	/**
 	 * Check and create the new operation and add it to the calculator.
@@ -27,8 +33,8 @@ public class OperationCreator {
 		
 		if(checkOperation(operationName, operationStructure)){
 			String[] operationStructureParts = operationStructure.split(" ");
-			ArrayList<String> lista = toPostfixExpression(operationStructureParts);
-			
+			ArrayList<String> postfixExpression = toPostfixExpression(operationStructureParts);
+			createClass(operationName, postfixExpression);
 			File newClassFile = new File("./" + operationName + "Operation.java");
 		}
 	}
@@ -84,11 +90,7 @@ public class OperationCreator {
 		boolean operatorAExist = false;
 		boolean operatorBExist = false;
 		boolean validOperation = false;
-		final String A = "A";
-		final String B = "B";
-		final String NOT = "NOT";
-		final String openParentheses = "(";
-		final String closeParentheses = ")";
+
 		
 		ArrayList<String> checkParentheses = new ArrayList<String>();
 		
@@ -105,18 +107,21 @@ public class OperationCreator {
 				if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
 					return false;
 				}
-			//Check if an operator follows the not operation
 			}else if(NOT.equals(operationStructureParts[i])){
+				//It can´t be possible to have a NOT at the end of the expression, or a NOT followed by a ")"
+				if(i == operationStructureParts.length - 1 || CLOSEPARENTHESIS.equals(operationStructureParts[i + 1])){
+					return false;
+				}
+				//Check if an operator follows the not operation
 				for(int j = 0; j < calculator.getOperations().size(); j++){
 					if(calculator.getOperations().get(j).getName().equals(operationStructureParts[i + 1])){
 						return false;
 					}
 				}
-				
 			//Check parentheses
-			}else if(openParentheses.equals(operationStructureParts[i])){
+			}else if(OPENPARENTHESIS.equals(operationStructureParts[i])){
 				checkParentheses.add("open");
-			}else if(closeParentheses.equals(operationStructureParts[i])){
+			}else if(CLOSEPARENTHESIS.equals(operationStructureParts[i])){
 				if(!checkParentheses.isEmpty()){
 					checkParentheses.remove(checkParentheses.size() - 1);
 				}else{
@@ -131,9 +136,15 @@ public class OperationCreator {
 	}
 
 	
-	
-	private void createClass(){
+	/**
+	 * Create the new operation class file
+	 * @param operationName
+	 * @param posfixExpression
+	 */
+	private void createClass(String operationName, ArrayList<String> posfixExpression) {
 		
+		
+		File newClassFile = new File("./" + operationName + "Operation.java");
 	}
 	
     /**
@@ -148,12 +159,12 @@ public class OperationCreator {
 		Deque<String> stack = new ArrayDeque<>();
 		ArrayList<String> postfixExpression = new ArrayList<>();
 		for(int i = 0; i < operationInfixStructureParts.length; i++){
-			if(operationInfixStructureParts[i].equals("A") || operationInfixStructureParts[i].equals("B")){
+			if(operationInfixStructureParts[i].equals(A) || operationInfixStructureParts[i].equals(B)){
 				postfixExpression.add(operationInfixStructureParts[i]);
-			}else if(operationInfixStructureParts[i].equals("(")){
+			}else if(operationInfixStructureParts[i].equals(OPENPARENTHESIS)){
 				stack.add(operationInfixStructureParts[i]);
-			}else if(operationInfixStructureParts[i].equals(")")){
-				while(!stack.isEmpty() && (!stack.peek().equals("("))){
+			}else if(operationInfixStructureParts[i].equals(CLOSEPARENTHESIS)){
+				while(!stack.isEmpty() && !stack.peek().equals(OPENPARENTHESIS)){
 					postfixExpression.add(stack.pop());
 				}
 				if(!stack.isEmpty()){
@@ -162,22 +173,30 @@ public class OperationCreator {
 					//Error
 				}
 			}else if(calculator.containOperation(operationInfixStructureParts[i])){
-				if(stack.isEmpty() || stack.peek().equals("(")){
+				if(stack.isEmpty() || stack.peek().equals(OPENPARENTHESIS)){
 					stack.push(operationInfixStructureParts[i]);
 				}else{
-					while(!stack.isEmpty() && !stack.peek().equals("(")){
+					while(!stack.isEmpty() && !stack.peek().equals(OPENPARENTHESIS) && !stack.peek().equals(NOT)){
 						postfixExpression.add(stack.pop());
 					}
 					stack.push(operationInfixStructureParts[i]);
 				}
-			}else if(operationInfixStructureParts[i].equals("NOT")){
-				//TODO
+			}else if(operationInfixStructureParts[i].equals(NOT)){
+				//We can do this because, previously we have checked that after a not always there are a letter or a parenthesis
+				if(operationInfixStructureParts[i + 1].equals(A) || operationInfixStructureParts[i + 1].equals(B)){
+					postfixExpression.add(operationInfixStructureParts[i + 1]);
+					postfixExpression.add(operationInfixStructureParts[i]);
+					i++;
+				}else if(operationInfixStructureParts[i + 1].equals(OPENPARENTHESIS)){		
+					stack.add(operationInfixStructureParts[i]);
+					i++;
+				}
 			}
 		}
 		//pa sacar lo que queda en la pila
 		while(!stack.isEmpty()){
 			String expresion = stack.pop();
-			if(expresion.equals("(") || expresion.equals(")")){
+			if(expresion.equals(OPENPARENTHESIS) || expresion.equals(CLOSEPARENTHESIS)){
 				//Error
 			}
 			postfixExpression.add(expresion);
