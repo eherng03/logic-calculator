@@ -23,6 +23,15 @@ public class LogicCalculator {
 		return operations;
 	}
 	
+	 /**
+	  * Add a new operation to the operations attribute.
+	  * 
+	  * @param operation
+	  */
+	public void addOperation(Operation operation){
+		operations.add(operation);
+	}
+	
 	/**
      * Returns true if the string is an existing operation in the arraylist
      * @return true
@@ -37,13 +46,13 @@ public class LogicCalculator {
 	}
 
 	/**
-	 * Get the result of the operation
-	 * 
-	 * @param aValue
-	 * @param operationValue
-	 * @param bValue
-	 * @return result
-	 */
+	  * Get the result of the operation.
+	  * 
+	  * @param aValue
+	  * @param operationValue
+	  * @param bValue
+	  * @return result
+	  */
 	public Operand operate(Object aValue, Object operationValue, Object bValue) {
 		Operand a = new Operand();
 		Operand b = new Operand();
@@ -52,15 +61,12 @@ public class LogicCalculator {
 		
 		String operationName = (String) operationValue;
 		
-		switch(operationName){
-			case " ":
-				javax.swing.JOptionPane.showMessageDialog(null, "Choose an operation", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-				break;
-			case "OR":
-				OROperation operation = new OROperation();
-				return operation.operate(a, b);
-			
-		//TODO add operations
+		if(!operationName.equals(" ")){
+			for(Operation operation : operations){
+				if(operationName.equals(operation.getName())){
+					return operation.operate(a, b);
+				}
+			}
 		}
 		return null;
 	}

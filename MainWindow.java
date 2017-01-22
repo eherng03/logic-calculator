@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 
 /**
@@ -141,13 +142,15 @@ public class MainWindow {
 	private void initializeButtons() {
 		btnOperate = new JButton("Operate");
 		btnOperate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Operand result = calculator.operate(cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBOperatorB.getSelectedItem());
-				if(result != null){
-					int resultValue = result.getValue();
-					tFResult.setText(Integer.toString(resultValue));
-				}
-			}
+			 public void actionPerformed(ActionEvent e) {
+				 Operand result = calculator.operate(cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBOperatorB.getSelectedItem());
+				 if(result != null){
+					 int resultValue = result.getValue();
+					 tFResult.setText(Integer.toString(resultValue));
+				 }else{
+					 javax.swing.JOptionPane.showMessageDialog(null, "Choose an operation", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+				 }
+			 }
 		});
 		btnOperate.setBounds(416, 72, 89, 23);
 		frame.getContentPane().add(btnOperate);
@@ -155,19 +158,33 @@ public class MainWindow {
 		btnCreate = new JButton("Create");
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					creator.createOperation(tFNewOperationName.getText(), tFNewOperationEstructure.getText(), calculator);
-				} catch (InvalidStructureException invalidEstructureError) {
-					 javax.swing.JOptionPane.showMessageDialog(null, invalidEstructureError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-				} catch (InvalidNameException invalidNameError) {
-					javax.swing.JOptionPane.showMessageDialog(null, invalidNameError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-				}
+				create();
 			}
 		});
 		btnCreate.setBounds(413, 194, 89, 23);
 		frame.getContentPane().add(btnCreate);
 	}
 	
+	
+	private void create(){
+		try {
+			
+			creator.createOperation(tFNewOperationName.getText(), tFNewOperationEstructure.getText(), calculator, this);
+			
+		}catch (InvalidStructureException invalidEstructureError) {
+			javax.swing.JOptionPane.showMessageDialog(null, invalidEstructureError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+		} catch (InvalidNameException invalidNameError) {
+			javax.swing.JOptionPane.showMessageDialog(null, invalidNameError.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+		} catch (ClassNotFoundException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, "The new operation couldn't be created", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+		} catch (InstantiationException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, "The new operation couldn't be created", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+		} catch (IllegalAccessException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, "The new operation couldn't be created", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, "The new operation couldn't be created", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+		}
+	}
 	/**
 	 * Create and initialize all the program TextFields.
 	 */
@@ -186,5 +203,11 @@ public class MainWindow {
 		tFNewOperationEstructure.setColumns(10);
 		tFNewOperationEstructure.setBounds(151, 163, 341, 20);
 		frame.getContentPane().add(tFNewOperationEstructure);
+	}
+	
+
+	public void repaint() {
+		initializeComboBoxes();
+		
 	}
 }

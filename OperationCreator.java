@@ -1,9 +1,11 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
 import com.squareup.javapoet.*;
+import javax.lang.model.element.Modifier;
 /**
  * Create new Class user operations.
  * 
@@ -12,6 +14,7 @@ import com.squareup.javapoet.*;
  */
 public class OperationCreator {
 	private LogicCalculator calculator;
+	private MainWindow mainWindow;
 	private final String A = "A";
 	private final String B = "B";
 	private final String NOT = "NOT";
@@ -20,22 +23,37 @@ public class OperationCreator {
 	
 	/**
 	 * Check and create the new operation and add it to the calculator.
+	 * @param mainWindow 
 	 * 
 	 * @param operationName.
 	 * @param operationStructure.
 	 * @param calculator.
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 * @throws InvalidNameException. 
 	 * @throws InvalidStructureException.
 	 * 
 	 */
-	public void createOperation(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException, InvalidNameException{
+	public void createOperation(String operationName, String operationStructure, LogicCalculator calculator, MainWindow mainWindow) throws InvalidStructureException, InvalidNameException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException{
 		this.calculator = calculator;
+		this.mainWindow = mainWindow;
 		
 		if(checkOperation(operationName, operationStructure)){
 			String[] operationStructureParts = operationStructure.split(" ");
 			ArrayList<String> postfixExpression = toPostfixExpression(operationStructureParts);
 			createClass(operationName, postfixExpression);
-			File newClassFile = new File("./" + operationName + "Operation.java");
+			
+			JCompiler compiler = new JCompiler();
+			compiler.compile();
+			
+			Class newClass = ClassLoader.getSystemClassLoader().loadClass(operationName + "Operation.class");
+			Operation operation = (Operation) newClass.newInstance();
+			
+			calculator.addOperation(operation);
+			 
+			mainWindow.repaint();
 		}
 	}
 
@@ -96,12 +114,21 @@ public class OperationCreator {
 		
 		for(int i = 0; i < operationStructureParts.length; i++){
 			if(A.equals(operationStructureParts[i])){
+				//We cant have two A operators
+				if(operatorAExist){
+					return false;
+				}
 				operatorAExist = true;
 				//The user shouldn't write two following operators or a NOT following an operator
 				if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
 					return false;
 				}
-			}else if(B.equals(operationStructureParts[i])){
+			//The first operator must always be A, and the second B
+			}else if(B.equals(operationStructureParts[i]) && operatorAExist){
+				//We cant have two B operators
+				if(operatorBExist){
+					return false;
+				}
 				operatorBExist = true;
 				//The user couldn't write two following operators or a NOT following an operator
 				if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
@@ -136,15 +163,83 @@ public class OperationCreator {
 	}
 
 	
+	private String createBodyMethod(String operationName, ArrayList<String> postfixExpression){
+
+		StringBuilder operateBody = new StringBuilder();
+		for(int i = 0; i < postfixExpression.size(); i++){
+			if(postfixExpression.get(i).equals(A)){
+				if(NOT.equals(postfixExpression.get(i + 1))){
+					operateBody.append("a.deny()");
+					i++;
+				}
+			}else if(postfixExpression.get(i).equals(B)){
+				if(NOT.equals(postfixExpression.get(i + 1))){
+					operateBody.append("b.deny()");
+					i++;
+				}
+			//here, we can only find operation end nots
+			}else if(NOT.equals(postfixExpression.get(i))){
+				operateBody.append("result.deny()");
+			}else{
+				//We can only have one operation
+				operateBody.append(operationName + "Operation operation = new " + operationName + "Operation();\n");
+				operateBody.append("operation.operate(a, b)");
+			}
+			
+			if(i < postfixExpression.size() - 1){
+				operateBody.append(";\n");
+			}
+		}
+		
+		return operateBody.toString();
+	}
+	
 	/**
 	 * Create the new operation class file
 	 * @param operationName
-	 * @param posfixExpression
+	 * @param postfixExpression
 	 */
-	private void createClass(String operationName, ArrayList<String> posfixExpression) {
+	private void createClass(String operationName, ArrayList<String> postfixExpression) {
 		
 		
-		File newClassFile = new File("./" + operationName + "Operation.java");
+		//Constructor
+		MethodSpec constructor = MethodSpec.constructorBuilder()
+			    .addModifiers(Modifier.PUBLIC)
+			    .addStatement("this.$N = $N", "name", operationName)
+			    .build();
+		//getName()
+		MethodSpec getName = MethodSpec.methodBuilder("getName")
+			    .addModifiers(Modifier.PUBLIC)
+			    .addStatement("return $N", "name")
+			    .build();
+		
+		
+		String body = createBodyMethod(operationName, postfixExpression);
+
+		
+		MethodSpec operate = MethodSpec.methodBuilder("operate")
+				.addParameter(Operand.class, "a")
+				.addParameter(Operand.class, "b")
+				.addStatement("Operand result = new Operand()")
+				.addStatement(body)
+				.addStatement("return result")
+				.build();
+				
+				
+		
+		
+		
+		TypeSpec newClass = TypeSpec.classBuilder(operationName + "Operation")
+				.addField(String.class, "name", Modifier.PRIVATE)
+			    .addModifiers(Modifier.PUBLIC)
+			    .addSuperinterface(Operation.class) 
+			    .addMethod(constructor)
+			    .addMethod(getName)
+			    .addMethod(operate)
+			    .build();
+		
+		JavaFile javaFile = JavaFile.builder(operationName + "Operation", newClass)
+			    .build();
 	}
 	
     /**

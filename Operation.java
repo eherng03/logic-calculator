@@ -20,4 +20,5 @@ public interface Operation{
 	 * @return result
 	 */
 	public Operand operate(Operand a, Operand b);
+	
 }
