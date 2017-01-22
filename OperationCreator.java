@@ -3,17 +3,23 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
+/**
+ * Create new Class user operations.
+ * 
+ * @author Alba, Eva y Hector
+ *
+ */
 public class OperationCreator {
 	private LogicCalculator calculator;
 	
 	/**
-	 * Check and create the new operation and add it to the calculator
+	 * Check and create the new operation and add it to the calculator.
 	 * 
-	 * @param operationName
-	 * @param operationStructure
-	 * @param calculator
-	 * @throws InvalidNameException 
-	 * @throws InvalidStructureException
+	 * @param operationName.
+	 * @param operationStructure.
+	 * @param calculator.
+	 * @throws InvalidNameException. 
+	 * @throws InvalidStructureException.
 	 * 
 	 */
 	public void createOperation(String operationName, String operationStructure, LogicCalculator calculator) throws InvalidStructureException, InvalidNameException{
@@ -29,13 +35,13 @@ public class OperationCreator {
 
 	
 	/**
-	 * Check the operation name and the operation structure
+	 * Check the operation name and the operation structure.
 	 * 
-	 * @param operationName
-	 * @param operationStructure
-	 * @return true if the operation is valid and false if it is invalid
-	 * @throws InvalidStructureException 
-	 * @throws InvalidNameException 
+	 * @param operationName.
+	 * @param operationStructure.
+	 * @return true if the operation is valid and false if it is invalid.
+	 * @throws InvalidStructureException.
+	 * @throws InvalidNameException.
 	 */
 	private boolean checkOperation(String operationName, String operationStructure) throws InvalidStructureException, InvalidNameException {
 		boolean validName = checkName(operationName);
@@ -53,10 +59,10 @@ public class OperationCreator {
 	
 	
 	/**
-	 * Check that the introduced name is not a repeated name
+	 * Check that the introduced name is not a repeated name.
 	 * 
-	 * @param operationName
-	 * @return true if the name is a valid name or false if it is invalid
+	 * @param operationName.
+	 * @return true if the name is a valid name or false if it is invalid.
 	 */
 	private boolean checkName(String operationName){
 		for(int i = 0; i < calculator.getOperations().size(); i++){
@@ -68,10 +74,10 @@ public class OperationCreator {
 	}
 	
 	/**
-	 * Check the operation structure that the user has introduced
+	 * Check the operation structure that the user has introduced.
 	 * 
-	 * @param operationStructure
-	 * @return true if the structure is valid and false if it is invalid
+	 * @param operationStructure.
+	 * @return true if the structure is valid and false if it is invalid.
 	 */
 	private boolean checkStructure(String operationStructure) {
 		String[] operationStructureParts = operationStructure.split(" ");
@@ -130,6 +136,12 @@ public class OperationCreator {
 		
 	}
 	
+    /**
+     * Translate an infix expression into a postfix expression.
+     *
+     * @param operationInfixStructureParts an array with the infix expression.
+     * @return The list with the postfix expression.
+     */
 	private ArrayList<String> toPostfixExpression(String[] operationInfixStructureParts){
 		// We used this algorithm    --->    http://faculty.cs.niu.edu/~hutchins/csci241/eval.htm
 		//https://github.com/mobgen/halo-android/blob/develop/sdk-libs/halo-content/src/main/java/com/mobgen/halo/android/content/models/SearchSyntax.java#L386

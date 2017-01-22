@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- *Class that throws the main window of the application
+ *The main window of the application. It shows the user interface.
  *
- *@author Alba, Eva and Hector
+ *@author Alba, Eva and Hector.
  */
 public class MainWindow {
 
@@ -51,14 +51,14 @@ public class MainWindow {
 	}
 
 	/**
-	 * Create the application
+	 * Create the application.
 	 */
 	public MainWindow() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the frame content
+	 * Initialize the frame content.
 	 */
 	private void initialize() {
 		
@@ -86,7 +86,7 @@ public class MainWindow {
 //					Initializations
 //---------------------------------------------------------------------------------------------------
 	/**
-	 * Create and initialize a label
+	 * Create and initialize a label.
 	 * @param string
 	 * @param i
 	 * @param j
@@ -100,7 +100,7 @@ public class MainWindow {
 	}
 
 	/**
-	 * Create and initialize all the program ComboBoxes
+	 * Create and initialize all the program ComboBoxes.
 	 */
 	private void initializeComboBoxes() {
 		
@@ -118,6 +118,7 @@ public class MainWindow {
 		
 		cBOperation = new JComboBox();
 		cBOperation.setBounds(172, 41, 130, 20);
+		cBOperation.addItem(" ");
 		for(int i = 0; i < calculator.getOperations().size(); i++){
 			cBOperation.addItem(calculator.getOperations().get(i).getName());
 		}
@@ -125,7 +126,7 @@ public class MainWindow {
 	}
 
 	/**
-	 * Create and initialize all the program Frame
+	 * Create and initialize all the program Frame.
 	 */
 	private void initializeFrame() {
 		frame = new JFrame();
@@ -141,8 +142,11 @@ public class MainWindow {
 		btnOperate = new JButton("Operate");
 		btnOperate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int resultValue = calculator.operate(cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBOperatorB.getSelectedItem()).getValue();
-				tFResult.setText(Integer.toString(resultValue));
+				Operand result = calculator.operate(cBOperatorA.getSelectedItem(), cBOperation.getSelectedItem(), cBOperatorB.getSelectedItem());
+				if(result != null){
+					int resultValue = result.getValue();
+					tFResult.setText(Integer.toString(resultValue));
+				}
 			}
 		});
 		btnOperate.setBounds(416, 72, 89, 23);
@@ -165,7 +169,7 @@ public class MainWindow {
 	}
 	
 	/**
-	 * Create and initialize all the program TextFields
+	 * Create and initialize all the program TextFields.
 	 */
 	private void initializeTextFields() {
 		tFResult = new JTextField();

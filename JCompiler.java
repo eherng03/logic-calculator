@@ -12,14 +12,19 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 /**
-* Compiler class, it compiles during runtime all the .java files
+* Compiler class, it compiles during runtime all the .java files.
 *
-* @author Alba, Eva and Hector
+* @author Alba, Eva and Hector.
 *
 */
 public class JCompiler {
 	
-    public static void compilar() throws IOException {
+	/**
+	 * This method compiles during runtime all the .java files.
+	 * 
+	 * @throws IOException
+	 */
+    public static void compile() throws IOException {
     	
       File directorio = new File(".");
       //Introducimos en un array todos los archivos .java que encontremos en el directorio

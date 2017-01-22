@@ -1,5 +1,12 @@
 import java.util.ArrayList;
 
+/**
+ * The logic calculator. It has got its operations and it can operate.
+ * 
+ * @author Alba, Eva y Hector.
+ *
+ */
+
 public class LogicCalculator {
 	private ArrayList<Operation> operations; 		//The existing operations
 	
@@ -48,6 +55,7 @@ public class LogicCalculator {
 		switch(operationName){
 			case " ":
 				javax.swing.JOptionPane.showMessageDialog(null, "Choose an operation", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+				break;
 			case "OR":
 				OROperation operation = new OROperation();
 				return operation.operate(a, b);

@@ -1,7 +1,7 @@
 import javax.swing.JOptionPane;
 
 /**
- * This exception is throwed if an user write an invalid operation
+ * This exception is throwed when an user write an invalid operation.
  * 
  * @author Alba, Eva and Hector
  */
