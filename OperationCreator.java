@@ -132,6 +132,7 @@ public class OperationCreator {
 	
 	private ArrayList<String> toPostfixExpression(String[] operationInfixStructureParts){
 		// We used this algorithm    --->    http://faculty.cs.niu.edu/~hutchins/csci241/eval.htm
+		//https://github.com/mobgen/halo-android/blob/develop/sdk-libs/halo-content/src/main/java/com/mobgen/halo/android/content/models/SearchSyntax.java#L386
 		Deque<String> stack = new ArrayDeque<>();
 		ArrayList<String> postfixExpression = new ArrayList<>();
 		for(int i = 0; i < operationInfixStructureParts.length; i++){
