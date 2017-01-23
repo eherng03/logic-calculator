@@ -1,3 +1,4 @@
+package INCO;
 /**
  * This exception is throwed when an user introduce a name that already exists.
  * 

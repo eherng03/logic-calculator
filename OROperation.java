@@ -1,3 +1,4 @@
+package INCO;
 
 public class OROperation implements Operation{
 	
@@ -16,6 +17,7 @@ public class OROperation implements Operation{
 	 * @param b
 	 * @return a OR b
 	 */
+	@Override
 	public Operand operate(Operand a, Operand b){
 		Operand result = new Operand();
 		if(a.getBooleanValue() || b.getBooleanValue()){

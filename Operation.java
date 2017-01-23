@@ -1,3 +1,4 @@
+package INCO;
 /**
  * This interface indicate that a class is an operation, it has a name and it can operate.
  * 

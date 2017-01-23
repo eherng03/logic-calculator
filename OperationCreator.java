@@ -1,5 +1,7 @@
+package INCO;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -45,10 +47,11 @@ public class OperationCreator {
 			ArrayList<String> postfixExpression = toPostfixExpression(operationStructureParts);
 			createClass(operationName, postfixExpression);
 			
-			JCompiler compiler = new JCompiler();
-			compiler.compile();
+			JCompiler.compile(operationName + "Operation");
 			
-			Class newClass = ClassLoader.getSystemClassLoader().loadClass(operationName + "Operation.class");
+			
+			
+			Class newClass = OperationCreator.class.getClassLoader().loadClass("INCO." + operationName + "Operation");
 			Operation operation = (Operation) newClass.newInstance();
 			
 			calculator.addOperation(operation);
@@ -163,7 +166,7 @@ public class OperationCreator {
 	}
 
 	
-	private String createBodyMethod(String operationName, ArrayList<String> postfixExpression){
+	private String createBodyMethod(ArrayList<String> postfixExpression){
 
 		StringBuilder operateBody = new StringBuilder();
 		for(int i = 0; i < postfixExpression.size(); i++){
@@ -182,8 +185,8 @@ public class OperationCreator {
 				operateBody.append("result.deny()");
 			}else{
 				//We can only have one operation
-				operateBody.append(operationName + "Operation operation = new " + operationName + "Operation();\n");
-				operateBody.append("operation.operate(a, b)");
+				operateBody.append(postfixExpression.get(i) + "Operation operation = new " + postfixExpression.get(i) + "Operation();\n");
+				operateBody.append("result = operation.operate(a, b)");
 			}
 			
 			if(i < postfixExpression.size() - 1){
@@ -198,33 +201,36 @@ public class OperationCreator {
 	 * Create the new operation class file
 	 * @param operationName
 	 * @param postfixExpression
+	 * @throws IOException 
 	 */
-	private void createClass(String operationName, ArrayList<String> postfixExpression) {
+	private void createClass(String operationName, ArrayList<String> postfixExpression) throws IOException {
 		
 		
 		//Constructor
 		MethodSpec constructor = MethodSpec.constructorBuilder()
 			    .addModifiers(Modifier.PUBLIC)
-			    .addStatement("this.$N = $N", "name", operationName)
+			    .addStatement("this.$N = $N", "name", "\"" + operationName + "\"")
 			    .build();
 		//getName()
 		MethodSpec getName = MethodSpec.methodBuilder("getName")
 			    .addModifiers(Modifier.PUBLIC)
+			    .returns(String.class)
 			    .addStatement("return $N", "name")
 			    .build();
 		
 		
-		String body = createBodyMethod(operationName, postfixExpression);
-
-		
+		String body = createBodyMethod(postfixExpression);
+	
 		MethodSpec operate = MethodSpec.methodBuilder("operate")
+				.addModifiers(Modifier.PUBLIC)
 				.addParameter(Operand.class, "a")
 				.addParameter(Operand.class, "b")
 				.addStatement("Operand result = new Operand()")
 				.addStatement(body)
-				.addStatement("return result")
+				.returns(Operand.class)
+				.addStatement("return $N",  "result")
 				.build();
-				
+			
 				
 		
 		
@@ -232,14 +238,16 @@ public class OperationCreator {
 		TypeSpec newClass = TypeSpec.classBuilder(operationName + "Operation")
 				.addField(String.class, "name", Modifier.PRIVATE)
 			    .addModifiers(Modifier.PUBLIC)
-			    .addSuperinterface(Operation.class) 
+			    .addSuperinterface(Operation.class)  
 			    .addMethod(constructor)
 			    .addMethod(getName)
 			    .addMethod(operate)
 			    .build();
 		
-		JavaFile javaFile = JavaFile.builder(operationName + "Operation", newClass)
+		JavaFile javaFile = JavaFile.builder("INCO", newClass)
 			    .build();
+		
+		javaFile.writeTo(Paths.get("./src"));
 	}
 	
     /**

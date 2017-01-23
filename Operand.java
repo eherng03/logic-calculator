@@ -1,11 +1,13 @@
+package INCO;
 /**
  * The operand involved in an operation. It has its value and implements deniable .
  * 
  * @author Alba, Eva y Hector
  *
  */
-public class Operand implements Deniable{
+public class Operand {
 
+	
 	private int value;
 	
 	public Operand(){
@@ -43,7 +45,6 @@ public class Operand implements Deniable{
 	 * Deny the value attribute. If the value is 1, when it is denied, it becomes to 0, else if the value is 0, when it
 	 * is denied it becomes to 1.
 	 */
-	@Override
 	public void deny() {
 		if(value == 1){
 			setValue(0);

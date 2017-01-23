@@ -1,3 +1,4 @@
+package INCO;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
@@ -21,9 +22,9 @@ public class MainWindow {
 	private JTextField tFNewOperationName;
 	private JTextField tFNewOperationEstructure;
 	
-	private JComboBox cBOperatorA;
-	private JComboBox cBOperatorB;
-	private JComboBox cBOperation;
+	private JComboBox<Integer> cBOperatorA;
+	private JComboBox<Integer> cBOperatorB;
+	private JComboBox<String> cBOperation;
 	
 	private JButton btnOperate;
 	private JButton btnCreate;
@@ -105,19 +106,19 @@ public class MainWindow {
 	 */
 	private void initializeComboBoxes() {
 		
-		cBOperatorA = new JComboBox();
+		cBOperatorA = new JComboBox<Integer>();
 		cBOperatorA.setBounds(106, 41, 35, 20);
 		cBOperatorA.addItem(0);
 		cBOperatorA.addItem(1);
 		frame.getContentPane().add(cBOperatorA);
 		
-		cBOperatorB = new JComboBox();
+		cBOperatorB = new JComboBox<Integer>();
 		cBOperatorB.setBounds(328, 41, 35, 20);
 		cBOperatorB.addItem(0);
 		cBOperatorB.addItem(1);
 		frame.getContentPane().add(cBOperatorB);
 		
-		cBOperation = new JComboBox();
+		cBOperation = new JComboBox<String>();
 		cBOperation.setBounds(172, 41, 130, 20);
 		cBOperation.addItem(" ");
 		for(int i = 0; i < calculator.getOperations().size(); i++){
@@ -207,7 +208,11 @@ public class MainWindow {
 	
 
 	public void repaint() {
-		initializeComboBoxes();
+		cBOperation.removeAllItems();
+		cBOperation.addItem(" ");
+		for(int i = 0; i < calculator.getOperations().size(); i++){
+			cBOperation.addItem(calculator.getOperations().get(i).getName());
+		}
 		
 	}
 }
