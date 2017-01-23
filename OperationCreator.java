@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Stack;
 
 import com.squareup.javapoet.*;
 import javax.lang.model.element.Modifier;
@@ -108,8 +109,8 @@ public class OperationCreator {
 	 */
 	private boolean checkStructure(String operationStructure) {
 		String[] operationStructureParts = operationStructure.split(" ");
-		boolean operatorAExist = false;
-		boolean operatorBExist = false;
+		int countOperand = 0;
+		int countOperation = 0;
 		boolean validOperation = false;
 
 		
@@ -117,25 +118,20 @@ public class OperationCreator {
 		
 		for(int i = 0; i < operationStructureParts.length; i++){
 			if(A.equals(operationStructureParts[i])){
-				//We cant have two A operators
-				if(operatorAExist){
-					return false;
-				}
-				operatorAExist = true;
+				countOperand++;
 				//The user shouldn't write two following operators or a NOT following an operator
-				if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
-					return false;
+				if(i < operationStructureParts.length - 1){
+					if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
+						return false;
+					}
 				}
-			//The first operator must always be A, and the second B
-			}else if(B.equals(operationStructureParts[i]) && operatorAExist){
-				//We cant have two B operators
-				if(operatorBExist){
-					return false;
-				}
-				operatorBExist = true;
+			}else if(B.equals(operationStructureParts[i])){
+				countOperand++;
 				//The user couldn't write two following operators or a NOT following an operator
-				if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
-					return false;
+				if(i < operationStructureParts.length - 1){
+					if(B.equals(operationStructureParts[i + 1]) || A.equals(operationStructureParts[i + 1]) || NOT.equals(operationStructureParts[i + 1])){
+						return false;
+					}
 				}
 			}else if(NOT.equals(operationStructureParts[i])){
 				//It can´t be possible to have a NOT at the end of the expression, or a NOT followed by a ")"
@@ -144,8 +140,10 @@ public class OperationCreator {
 				}
 				//Check if an operator follows the not operation
 				for(int j = 0; j < calculator.getOperations().size(); j++){
-					if(calculator.getOperations().get(j).getName().equals(operationStructureParts[i + 1])){
-						return false;
+					if(i < operationStructureParts.length - 1){
+						if(calculator.getOperations().get(j).getName().equals(operationStructureParts[i + 1])){
+							return false;
+						}
 					}
 				}
 			//Check parentheses
@@ -159,42 +157,58 @@ public class OperationCreator {
 				}
 			//Check if the operation exists
 			}else{
-				return calculator.containOperation(operationStructureParts[i]);
-			}
-		}
-		return operatorAExist && operatorBExist && validOperation && checkParentheses.isEmpty();
-	}
-
-	
-	private String createBodyMethod(ArrayList<String> postfixExpression){
-
-		StringBuilder operateBody = new StringBuilder();
-		for(int i = 0; i < postfixExpression.size(); i++){
-			if(postfixExpression.get(i).equals(A)){
-				if(NOT.equals(postfixExpression.get(i + 1))){
-					operateBody.append("a.deny()");
-					i++;
+				if(calculator.containOperation(operationStructureParts[i])){
+					countOperation++;
+				}else{
+					return false;
 				}
-			}else if(postfixExpression.get(i).equals(B)){
-				if(NOT.equals(postfixExpression.get(i + 1))){
-					operateBody.append("b.deny()");
-					i++;
-				}
-			//here, we can only find operation end nots
-			}else if(NOT.equals(postfixExpression.get(i))){
-				operateBody.append("result.deny()");
-			}else{
-				//We can only have one operation
-				operateBody.append(postfixExpression.get(i) + "Operation operation = new " + postfixExpression.get(i) + "Operation();\n");
-				operateBody.append("result = operation.operate(a, b)");
-			}
-			
-			if(i < postfixExpression.size() - 1){
-				operateBody.append(";\n");
 			}
 		}
 		
-		return operateBody.toString();
+		if(countOperand != countOperation + 1){
+			validOperation = false;
+		}else{
+			validOperation = true;
+		}
+		
+		return  validOperation && checkParentheses.isEmpty();
+	}
+
+	
+	private String[] createBodyMethod(ArrayList<String> postfixExpression) throws InvalidStructureException{
+
+		StringBuilder operateBody = new StringBuilder();
+		int countOperation = 0;
+		Stack<String> operationsStack = new Stack<String>();
+		for(int i = 0; i < postfixExpression.size(); i++){
+			if(postfixExpression.get(i).equals(A)){
+				operationsStack.push("a");
+				
+			}else if(postfixExpression.get(i).equals(B)){
+				operationsStack.push("b");
+				
+			}else if(NOT.equals(postfixExpression.get(i))){
+				operateBody.append(operationsStack.peek() + ".deny()");
+				if(i < postfixExpression.size() - 1){
+					operateBody.append(";\n");
+				}
+				
+			}else{
+				operateBody.append(postfixExpression.get(i) + "Operation operation" + countOperation + " = new " + postfixExpression.get(i) + "Operation();\n");
+				operateBody.append("Operand result" + countOperation + " = operation" + countOperation + ".operate(" + operationsStack.pop() +" ," + operationsStack.pop() + ")");
+				if(i < postfixExpression.size() - 1){
+					operateBody.append(";\n");
+				}
+				operationsStack.push("result" + countOperation);
+				countOperation++;
+			}
+			
+			
+		}
+		if(operationsStack.size() != 1){
+			throw new InvalidStructureException();
+		}
+		return new String[] {operateBody.toString(), operationsStack.pop()};
 	}
 	
 	/**
@@ -202,8 +216,9 @@ public class OperationCreator {
 	 * @param operationName
 	 * @param postfixExpression
 	 * @throws IOException 
+	 * @throws InvalidStructureException 
 	 */
-	private void createClass(String operationName, ArrayList<String> postfixExpression) throws IOException {
+	private void createClass(String operationName, ArrayList<String> postfixExpression) throws IOException, InvalidStructureException {
 		
 		
 		//Constructor
@@ -219,7 +234,9 @@ public class OperationCreator {
 			    .build();
 		
 		
-		String body = createBodyMethod(postfixExpression);
+		String[] bodyAndReturnName = createBodyMethod(postfixExpression);
+		String body = bodyAndReturnName[0];
+		String resultName = bodyAndReturnName[1];
 	
 		MethodSpec operate = MethodSpec.methodBuilder("operate")
 				.addModifiers(Modifier.PUBLIC)
@@ -228,13 +245,9 @@ public class OperationCreator {
 				.addStatement("Operand result = new Operand()")
 				.addStatement(body)
 				.returns(Operand.class)
-				.addStatement("return $N",  "result")
+				.addStatement("return $N",  resultName)
 				.build();
 			
-				
-		
-		
-		
 		TypeSpec newClass = TypeSpec.classBuilder(operationName + "Operation")
 				.addField(String.class, "name", Modifier.PRIVATE)
 			    .addModifiers(Modifier.PUBLIC)

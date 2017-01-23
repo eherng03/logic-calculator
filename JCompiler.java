@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -41,5 +42,6 @@ public class JCompiler {
       
       File a = new File("./src/INCO/" + fileName + ".class");
       a.renameTo(new File("./bin/INCO/"  + a.getName()));
+      a.delete();
     }
 }
