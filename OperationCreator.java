@@ -15,6 +15,7 @@ import javax.lang.model.element.Modifier;
  * @author Alba, Eva y Hector
  *
  */
+@SuppressWarnings("unused")
 public class OperationCreator {
 	private LogicCalculator calculator;
 	private MainWindow mainWindow;
@@ -52,7 +53,7 @@ public class OperationCreator {
 			
 			
 			
-			Class newClass = OperationCreator.class.getClassLoader().loadClass("INCO." + operationName + "Operation");
+			Class<?> newClass = OperationCreator.class.getClassLoader().loadClass("INCO." + operationName + "Operation");
 			Operation operation = (Operation) newClass.newInstance();
 			
 			calculator.addOperation(operation);

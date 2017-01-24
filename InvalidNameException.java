@@ -5,6 +5,7 @@ package INCO;
  * @author Alba, Eva y Hector.
  *
  */
+@SuppressWarnings("serial")
 public class InvalidNameException extends Exception {
 	
 	@Override
