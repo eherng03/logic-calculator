@@ -6,8 +6,13 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
 
 /**
  *The main window of the application. It shows the user interface.
@@ -32,6 +37,9 @@ public class MainWindow {
 	private LogicCalculator calculator;
 	
 	private OperationCreator creator;
+	private JMenuBar menuBar;
+	private JMenuItem mntmHelp;
+	private JMenuItem mntmHelp_1;
 	
 
 	/**
@@ -99,6 +107,7 @@ public class MainWindow {
 		JLabel lbl = new JLabel(string);
 		lbl.setBounds(126, 23, k, l);
 		frame.getContentPane().add(lbl);
+		
 	}
 
 	/**
@@ -135,6 +144,42 @@ public class MainWindow {
 		frame.setBounds(100, 100, 541, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
+		menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		mntmHelp_1 = new JMenuItem("Help");
+		mntmHelp_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame frame = new JFrame();
+				frame.setVisible(true);
+				frame.setBounds(100, 100, 541, 250);
+				frame. addWindowListener(new WindowAdapter(){
+		            @Override
+		            public void windowClosing(WindowEvent e)
+		            {
+		                e.getWindow().dispose();
+		            }
+		        });
+				frame.getContentPane().setLayout(null);
+				
+				JTextArea textArea = new JTextArea();
+				textArea.setBounds(0, 0, 541, 300);
+				frame.getContentPane().add(textArea);
+				textArea.setEditable(false);
+				textArea.setText("\n      Hello, welcome to the Logic Calculator help.\n"+
+								"      Here we show you different operation examples that you could create, but you could let\n"
+								+ "      your imagination and create as many operations as you want.\n"
+								+ "      We hope you enjoy.\n\n"
+								+ "      AND = NOT ( NOT A OR NOT B)\n"
+								+ "      NOR = NOT ( A OR B )\n"
+								+ "      NAND = NOT ( A AND B )\n"
+								+ "      XOR = ( NOT A AND B ) OR ( NOT B AND A )\n"
+								+ "      NXOR = ( A AND B ) OR ( NOT B AND NOT A )\n");
+			}
+		});
+		menuBar.add(mntmHelp_1);
+		
 	}
 	
 	/**
